@@ -1,0 +1,31 @@
+﻿@model IEnumerable<CountType>
+@{
+    ViewData["Title"] = "Count Types";
+}
+<a asp-action="CreateCountType" class="btn btn-primary">Create Count Type</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Actions
+            </th>
+            <th>
+                Name
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var countType in Model)
+        {
+            <tr>
+                <th>
+                    <a class="btn btn-primary">Edit</a>
+                    <a class="btn btn-danger">Delete</a>
+                </th>
+                <th>
+                    @countType.Nombre
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>
