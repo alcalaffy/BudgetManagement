@@ -6,7 +6,7 @@ namespace BudgetManagement.IServices
     {
         Task Create(CountType countType);
         Task<IEnumerable<CountType>> Get(int usuarioId);
-        Task<CountType> GetCountTypeById(string nombre, int usuarioId);
+        Task<CountType> GetCountTypeById(int id, int usuarioId);
         Task Update(CountType countType);
         Task<bool> Validate(string name, int userId);
 

@@ -37,23 +37,23 @@ namespace BudgetManagement.Services
         public async Task<IEnumerable<CountType>> Get(int usuarioId)
         {
             using var conn = new SqlConnection(connectionString);
-            return await conn.QueryAsync<CountType>(@"SELECT Nombre,UsuarioId,Orden FROM TiposCuentas 
+            return await conn.QueryAsync<CountType>(@"SELECT Id,Nombre,UsuarioId,Orden FROM TiposCuentas 
                                                     WHERE UsuarioId=@UsuarioId", new { usuarioId });
         }
         public async Task Update(CountType countType)
         {
             using var conn = new SqlConnection(connectionString);
 
-            await conn.ExecuteAsync(@"UPDATE TiposCuentas SET Nombre=@Nombre 
-                                    WHERE UsuarioId=@UsuarioId", countType);
+            await conn.ExecuteAsync(@"UPDATE TiposCuentas SET Nombre = @Nombre 
+                                    WHERE Id= @Id", countType);
         }
 
-        public async Task<CountType> GetCountTypeById(string nombre, int usuarioId)
+        public async Task<CountType> GetCountTypeById(int id, int usuarioId)
         {
             using var conn = new SqlConnection(connectionString);
             return await conn.QueryFirstOrDefaultAsync<CountType>(@"SELECT Nombre, UsuarioId, Orden FROM TiposCuentas 
-                                                                  WHERE Nombre=@Nombre AND UsuarioId=@UsuarioId",
-                                                                  new { nombre, usuarioId }) ?? new CountType();
+                                                                  WHERE Id=@Id AND UsuarioId=@UsuarioId",
+                                                                  new { id, usuarioId }) ?? new CountType();
         }
     }
 }

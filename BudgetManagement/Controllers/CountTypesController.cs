@@ -23,6 +23,10 @@ namespace BudgetManagement.Controllers
         {
                 return View();
         }
+        public IActionResult Update()
+        {
+            return View();
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -60,14 +64,14 @@ namespace BudgetManagement.Controllers
             }
             return Json(true);
         }
-        [HttpPut]
-        public async Task<ActionResult> Update(string nombre)
+        [HttpGet]
+        public async Task<ActionResult> Update(int id)
         {
             var userId = _userService.GetUser();
 
             //se valida si el tipo de cuenta existe relacionada a ese usuario
             //de lo contrario cualquier usuario podria modificar el registro
-            var count = await _repository.GetCountTypeById(nombre, userId);
+            var count = await _repository.GetCountTypeById(id,userId);
 
             if (count is null)
             {
@@ -75,6 +79,23 @@ namespace BudgetManagement.Controllers
             }
             //await update
             return View(count);
+        }
+        [HttpPost]
+        public async Task<ActionResult> Update(CountType countType)
+        {
+            var userId = _userService.GetUser();
+
+            //se valida si el tipo de cuenta existe relacionada a ese usuario
+            //de lo contrario cualquier usuario podria modificar el registro
+            var count = await _repository.GetCountTypeById(countType.Id, userId);
+
+            if (count is null)
+            {
+                RedirectToAction("Recurso no encontrado", "NotFound");
+            }
+            //await update
+            await _repository.Update(countType);
+            return RedirectToAction("Index");
         }
     }
 }
