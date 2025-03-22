@@ -14,13 +14,13 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="reordenable">
         @foreach(var countType in Model)
         {
             <tr>
                 <th>
                     <a class="btn btn-primary" asp-action="Update" asp-route-id="@countType.Id">Edit</a>
-                    <a class="btn btn-danger">Delete</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@countType.Id">Delete</a>
                 </th>
                 <th>
                     @countType.Nombre
@@ -29,3 +29,11 @@
         }
     </tbody>
 </table>
+
+@section Scripts{
+    <script>
+        $(function () {
+            $("#reordenable").sortable();
+        })
+    </script>
+}

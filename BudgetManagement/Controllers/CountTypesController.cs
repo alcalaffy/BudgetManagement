@@ -75,7 +75,7 @@ namespace BudgetManagement.Controllers
 
             if (count is null)
             {
-                RedirectToAction("Recurso no encontrado","Index");
+                RedirectToAction("Recurso no encontrado", "NotFound");
             }
             //await update
             return View(count);
@@ -95,6 +95,34 @@ namespace BudgetManagement.Controllers
             }
             //await update
             await _repository.Update(countType);
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userId = _userService.GetUser();
+
+            var count = await _repository.GetCountTypeById(id, userId);
+
+            if (count is null)
+            {
+                RedirectToAction("Recurso no encontrado", "NotFound");
+            }
+
+            return View(count);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteCount(int id)
+        {
+            var userId = _userService.GetUser();
+
+            var count = await _repository.GetCountTypeById(id, userId);
+
+            if (count is null)
+            {
+                RedirectToAction("Recurso no encontrado", "NotFound");
+            }
+            await _repository.Delete(id);
             return RedirectToAction("Index");
         }
     }

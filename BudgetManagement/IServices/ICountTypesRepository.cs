@@ -5,6 +5,7 @@ namespace BudgetManagement.IServices
     public interface  ICountTypesRepository
     {
         Task Create(CountType countType);
+        Task Delete(int id);
         Task<IEnumerable<CountType>> Get(int usuarioId);
         Task<CountType> GetCountTypeById(int id, int usuarioId);
         Task Update(CountType countType);

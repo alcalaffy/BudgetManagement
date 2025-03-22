@@ -1,0 +1,10 @@
+﻿@model CountType
+@{
+    ViewData["Title"] = "Delete Count Type";
+}
+<h3 class="mb-3">Are you sure to delete the count type @Model.Nombre</h3>
+<form asp-action="DeleteCount">
+    <input asp-for="Id" hidden />
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a class="btn btn-secondary" asp-action="Index">Cancel</a>
+</form>

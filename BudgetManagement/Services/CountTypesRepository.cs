@@ -55,5 +55,11 @@ namespace BudgetManagement.Services
                                                                   WHERE Id=@Id AND UsuarioId=@UsuarioId",
                                                                   new { id, usuarioId }) ?? new CountType();
         }
+
+        public async Task Delete(int id)
+        {
+            using var conn = new SqlConnection(connectionString);
+            await conn.ExecuteAsync(@"DELETE TiposCuentas WHERE Id=@Id", new {id});
+        }
     }
 }
