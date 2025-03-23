@@ -18,10 +18,12 @@ namespace BudgetManagement.Services
         public async Task Create(CountType countType) 
         {
             using var conn=new SqlConnection(connectionString);
-            var id = await conn.QuerySingleAsync<int>(@"INSERT INTO TiposCuentas(Nombre,UsuarioId,Orden) 
-                                           VALUES(@Nombre,@UsuarioId,0) 
-                                           SELECT SCOPE_IDENTITY()", countType
-                                           );
+
+            var id = await conn.QuerySingleAsync<int>("CountTypes_Insert",
+                                                        new { nombre = countType.Nombre,
+                                                            usuarioId = countType.UsuarioId },
+                                                        commandType: System.Data.CommandType.StoredProcedure);
+                                           
             countType.Id = id;
         }
 
