@@ -38,7 +38,8 @@ namespace BudgetManagement.Services
         {
             using var conn = new SqlConnection(connectionString);
             return await conn.QueryAsync<CountType>(@"SELECT Id,Nombre,UsuarioId,Orden FROM TiposCuentas 
-                                                    WHERE UsuarioId=@UsuarioId", new { usuarioId });
+                                                    WHERE UsuarioId=@UsuarioId
+                                                    ORDER BY Orden", new { usuarioId });
         }
         public async Task Update(CountType countType)
         {
@@ -60,6 +61,12 @@ namespace BudgetManagement.Services
         {
             using var conn = new SqlConnection(connectionString);
             await conn.ExecuteAsync(@"DELETE TiposCuentas WHERE Id=@Id", new {id});
+        }
+        public async Task Order(IEnumerable<CountType> countTypes)
+        {
+            var query = "Update TiposCuentas SET Orden=@Orden WHERE Id=@Id";
+            using var conn = new SqlConnection(connectionString);
+            await conn.ExecuteAsync(query, countTypes);
         }
     }
 }

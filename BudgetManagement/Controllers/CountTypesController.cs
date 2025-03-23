@@ -125,5 +125,28 @@ namespace BudgetManagement.Controllers
             await _repository.Delete(id);
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> Order([FromBody]int[] ids)
+        {
+            var userId = _userService.GetUser();
+            var counts=await _repository.Get(userId);
+            var countsIds= counts.Select(x=> x.Id).ToList();
+            var idsNotBelongToUser= ids.Except(countsIds).ToList();
+
+            if (idsNotBelongToUser.Count > 0)
+            {
+                return Forbid();
+            }
+
+            var orderCounts = ids.Select((value, index) => new CountType()
+            {
+                Id = value,
+                Orden = index + 1
+            }).AsEnumerable();
+
+            await _repository.Order(orderCounts);
+
+            return Ok();
+        }
     }
 }
