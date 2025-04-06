@@ -21,9 +21,23 @@ namespace BudgetManagement.Controllers
             _countsRepository = countsRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var userId = _userService.GetUser();
+            var countsWithType = await _countsRepository.SearchCounts(userId);
+
+            //the list of counts with types need to transfer in a indexcountsviewmodel class
+            //first we agrupeated the list with the field TipoCuenta and then we do the
+            // convertion
+            var model = countsWithType
+                       .GroupBy(c => c.TipoCuenta)
+                       .Select(g => new IndexCountsViewModel
+                       {
+                           TipoCuenta=g.Key,
+                           Cuentas=g.AsEnumerable()
+                       }).ToList();
+
+            return View(model);
         }
 
         public  async Task<IActionResult> Create()

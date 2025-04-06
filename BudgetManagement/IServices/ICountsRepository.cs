@@ -4,6 +4,7 @@ namespace BudgetManagement.IServices
 {
     public interface ICountsRepository
     {
-        Task Create(CreateCountViewModel count);
+        Task Create(Count count);
+        Task<IEnumerable<Count>> SearchCounts(int usuarioId);
     }
 }
