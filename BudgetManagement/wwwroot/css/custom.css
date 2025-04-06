@@ -1,3 +1,35 @@
 ﻿#reordenable{
     cursor: move;
 }
+.total-container{
+    display:flex;
+    justify-content:space-around;
+    font-size:26px;
+    text-align:center;
+}
+.active{
+    color:blue;
+}
+.pasive{
+    color:red;
+}
+
+.accordion-counts button{
+    color:black !important;
+    font-size:20px;
+}
+
+.accordion-counts button > span{
+    display:flex;
+    justify-content:space-between;
+    width:100%;
+}
+
+.accordion-counts ul li{
+    display:flex;
+    justify-content:space-between;
+}
+
+.accordion-counts accordion-collapse{
+    font-size:18px;
+}
