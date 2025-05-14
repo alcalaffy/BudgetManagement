@@ -32,5 +32,27 @@ namespace BudgetManagement.Services
                                                         ORDER BY TC.ORDEN", new { usuarioId });
             return counts;
         }
+        public async Task<Count> GetCountById(int id, int usuarioId)
+        {
+            using var conn = new SqlConnection(connectionString);
+
+            const string sql = @"
+                                SELECT Cuentas.Id, Cuentas.Nombre, Balance, Descripcion, Cuentas.TipoCuentaId
+                                FROM CUENTAS
+                                INNER JOIN TiposCuentas TC ON TC.Id = Cuentas.TipoCuentaId 
+                                WHERE TC.UsuarioId = @UsuarioId AND Cuentas.Id = @Id";
+
+            return await conn.QueryFirstOrDefaultAsync<Count>(sql, new { Id = id, UsuarioId = usuarioId });
+        }
+        public async Task Update(CreateCountViewModel count)
+        {
+            using var conn = new SqlConnection(connectionString);
+
+            await conn.ExecuteAsync(@"UPDATE Cuentas
+                                    SET Nombre = @Nombre, Balance = @Balance, Descripcion = @Descripcion,
+                                    TipoCuentaId = @TipoCuentaId
+                                    WHERE Id = @Id", count);
+        }
+
     }
 }

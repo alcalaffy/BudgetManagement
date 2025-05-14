@@ -33,18 +33,18 @@ namespace BudgetManagement.Controllers
                        .GroupBy(c => c.TipoCuenta)
                        .Select(g => new IndexCountsViewModel
                        {
-                           TipoCuenta=g.Key,
-                           Cuentas=g.AsEnumerable()
+                           TipoCuenta = g.Key,
+                           Cuentas = g.AsEnumerable()
                        }).ToList();
 
             return View(model);
         }
 
-        public  async Task<IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             var userId = _userService.GetUser();
             var model = new CreateCountViewModel();
-            model.CountTypes = await GetCountTypes(userId);            
+            model.CountTypes = await GetCountTypes(userId);
             return View(model);
         }
 
@@ -52,20 +52,58 @@ namespace BudgetManagement.Controllers
         public async Task<IActionResult> Create(CreateCountViewModel count)
         {
             var userId = _userService.GetUser();
-            var countType = await _countTypesRepository.GetCountTypeById(userId,count.TipoCuentaId);
+            var countType = await _countTypesRepository.GetCountTypeById(userId, count.TipoCuentaId);
 
-            if(countType is null)
+            if (countType is null)
             {
-                return RedirectToAction("Not Found","NotFound");
+                return RedirectToAction("Not Found", "NotFound");
             }
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 count.CountTypes = await GetCountTypes(userId);
                 return View(count);
             }
 
             await _countsRepository.Create(count);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> Update(int id)
+        {
+            var userId = _userService.GetUser();
+            var count = await _countsRepository.GetCountById(id, userId);
+            if(count is null)
+            {
+                return RedirectToAction("Not Found", "NotFound");
+            }
+            var model = new CreateCountViewModel()
+            {
+                Id = count.Id,
+                Nombre = count.Nombre,
+                TipoCuentaId = count.TipoCuentaId,
+                Descripcion = count.Descripcion,
+                Balance = count.Balance
+            };
+
+            model.CountTypes = await GetCountTypes(userId);
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Update(CreateCountViewModel count)
+        {
+            var userId = _userService.GetUser();
+            var countExist = await _countsRepository.GetCountById(count.Id, userId);
+            if (countExist is null)
+            {
+                return RedirectToAction("Not Found", "NotFound");
+            }
+            var countType = await _countTypesRepository.GetCountTypeById(userId, count.TipoCuentaId);
+
+            if (countType is null)
+            {
+                return RedirectToAction("Not Found", "NotFound");
+            }
+            await _countsRepository.Update(count);
             return RedirectToAction("Index");
         }
         private async Task<IEnumerable<SelectListItem>> GetCountTypes(int userId)
