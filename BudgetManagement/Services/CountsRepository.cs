@@ -53,6 +53,11 @@ namespace BudgetManagement.Services
                                     TipoCuentaId = @TipoCuentaId
                                     WHERE Id = @Id", count);
         }
+        public async Task Delete(int id)
+        {
+            using var conn = new SqlConnection(connectionString);
+            await conn.ExecuteAsync(@"DELETE Cuentas WHERE Id = @Id", new {id});
+        }
 
     }
 }

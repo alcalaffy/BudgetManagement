@@ -69,7 +69,7 @@
                             <a asp-action="Update" asp-route-id="@count.Id" class="btn-primary btn">
                                 <i class="bi-pencil-fill"></i>
                             </a>
-                            <a class="btn-danger btn">
+                            <a class="btn-danger btn" asp-action="Delete" asp-route-id="@count.Id">
                                 <i class="bi-trash-fill"></i>
                             </a>
                             <span class="@classCount">@parseBalance(count.Balance)</span>

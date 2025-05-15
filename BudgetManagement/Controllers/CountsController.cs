@@ -103,6 +103,29 @@ namespace BudgetManagement.Controllers
             await _countsRepository.Update(count);
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public async Task<IActionResult>Delete(int id)
+        {
+            var userId = _userService.GetUser();
+            var count= await _countsRepository.GetCountById(id, userId);
+            if (count is null)
+            {
+                return RedirectToAction("Not Found", "NotFound");
+            }
+            return View(count);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteCount(int id)
+        {
+            var userId = _userService.GetUser();
+            var count = await _countsRepository.GetCountById(id, userId);
+            if (count is null)
+            {
+                return RedirectToAction("Not Found", "NotFound");
+            }
+            await _countsRepository.Delete(id);
+            return RedirectToAction("Index");
+        }
         private async Task<IEnumerable<SelectListItem>> GetCountTypes(int userId)
         {
             var countTypes = await _countTypesRepository.Get(userId);
