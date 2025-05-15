@@ -1,4 +1,5 @@
-﻿using BudgetManagement.IServices;
+﻿using AutoMapper;
+using BudgetManagement.IServices;
 using BudgetManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,13 +13,16 @@ namespace BudgetManagement.Controllers
         private readonly ICountTypesRepository _countTypesRepository;
         private readonly IUserService _userService;
         private readonly ICountsRepository _countsRepository;
+        private readonly IMapper _mapper;
         public CountsController(ICountTypesRepository countTypesRepository,
                                 IUserService userService,
-                                ICountsRepository countsRepository)
+                                ICountsRepository countsRepository,
+                                IMapper mapper)
         {
             _countTypesRepository = countTypesRepository;
             _userService = userService;
             _countsRepository = countsRepository;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
@@ -76,14 +80,7 @@ namespace BudgetManagement.Controllers
             {
                 return RedirectToAction("Not Found", "NotFound");
             }
-            var model = new CreateCountViewModel()
-            {
-                Id = count.Id,
-                Nombre = count.Nombre,
-                TipoCuentaId = count.TipoCuentaId,
-                Descripcion = count.Descripcion,
-                Balance = count.Balance
-            };
+            var model = _mapper.Map<CreateCountViewModel>(count);
 
             model.CountTypes = await GetCountTypes(userId);
             return View(model);

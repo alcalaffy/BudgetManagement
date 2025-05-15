@@ -8,6 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<ICountTypesRepository,CountTypesRepository>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ICountsRepository, CountsRepository>();
+builder.Services.AddAutoMapper(typeof(Program));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
