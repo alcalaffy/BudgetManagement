@@ -26,5 +26,23 @@ namespace BudgetManagement.Services
             return await conn.QueryAsync<Category>(@"SELECT Id,Nombre,TipoOperacionId,UsuarioId
                                                      FROM Categorias WHERE UsuarioId=@userId", new { userId });
         }
+        public async Task<Category>GetById(int Id,int userId)
+        {
+            using var conn = new SqlConnection(connectionString);
+            return await conn.QueryFirstOrDefaultAsync<Category>(@"SELECT * FROM Categorias 
+                                                                   WHERE Id = @Id AND UsuarioId = @userId", new {Id, userId });
+        }
+        public async Task Update(Category category)
+        {
+            using var conn = new SqlConnection(connectionString);
+            await conn.ExecuteAsync(@"UPDATE Categorias SET Nombre=@Nombre,TipoOperacionId=@TipoOperacionId 
+                                      WHERE Id=@Id AND UsuarioId=@UsuarioId",category);
+        }
+        public async Task Delete(int id,int userId)
+        {
+            using var conn= new SqlConnection(connectionString);
+            await conn.ExecuteAsync(@"DELETE Categorias WHERE UsuarioId=@userId AND Id=@id", new {id, userId});
+        }
+
     }
 }

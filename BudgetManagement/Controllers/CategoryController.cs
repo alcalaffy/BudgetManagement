@@ -14,16 +14,38 @@ namespace BudgetManagement.Controllers
                 _categoryRepository = categoryRepository;
                 _userService = userService;
         }
-        public IActionResult Create()
-        {
-            return View();
-        }
         public async Task<IActionResult> Index()
         {
             var user = _userService.GetUser();
             var categories = await _categoryRepository.GetCategories(user);
             return View(categories);
         }
+        public IActionResult Create()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Update(int id)
+        {
+            var user = _userService.GetUser();
+            var category = await _categoryRepository.GetById(id,user);
+            if(category is null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = _userService.GetUser();
+            var cat = await _categoryRepository.GetById(id, user);
+
+            if (cat is null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(cat);
+        }
+        
         [HttpPost]
         public async Task<IActionResult>Create(Category category)
         {
@@ -34,6 +56,32 @@ namespace BudgetManagement.Controllers
             var user = _userService.GetUser();
             category.UsuarioId = user;
             await _categoryRepository.Create(category);
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult>Update(Category category)
+        {
+            var user = _userService.GetUser();
+            var cat= await _categoryRepository.GetById(category.Id, user);
+            if(cat is null)
+            {
+                return RedirectToAction("Index");
+            }
+            category.UsuarioId = user;
+            await _categoryRepository.Update(category);
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var user = _userService.GetUser();
+            var cat = await _categoryRepository.GetById(id, user);
+
+            if (cat is null)
+            {
+                return RedirectToAction("Index");
+            }
+            await _categoryRepository.Delete(id,user);
             return RedirectToAction("Index");
         }
 
