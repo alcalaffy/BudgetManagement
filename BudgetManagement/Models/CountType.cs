@@ -10,6 +10,7 @@ namespace BudgetManagement.Models
         [Required(ErrorMessage ="Campo {0} Obligatorio")]
         [FirstLetterInUpperCase]
         [Remote(action: "ValidateRepeatedCountType",controller: "CountTypes")]
+        [Display(Name = "Name")]
         public string? Nombre { get; set; }
         public int UsuarioId { get; set; }
         public int Orden { get; set; }
