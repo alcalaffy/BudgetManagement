@@ -40,10 +40,30 @@ namespace BudgetManagement.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Transaction transaction)
+        public async Task<IActionResult> Create(CreateTransactionViewModel transaction)
         {
             var user = _userService.GetUser();
+            if(!ModelState.IsValid)
+            {
+                transaction.Cuentas=await GetCounts(user);
+                transaction.Categorias = await GetCategories(user,transaction.OperationTypeId);
+                return View(transaction);
+            }
+            var count = await _countsRepository.GetCountById(transaction.CuentaId,user);
+            if(count is null)
+            {
+                return RedirectToAction("NotFound", "Home");
+            }
+            var category=await _categoryRepository.GetById(transaction.CategoriaId,user);
+            if(category is null)
+            {
+                return RedirectToAction("NotFound", "Home");
+            }
             transaction.UsuarioId = user;
+            if(transaction.OperationTypeId==OperationType.Outcome)
+            {
+                transaction.Monto *= -1;
+            }
             await _transactionRepository.Create(transaction);
             return RedirectToAction("Index");
         }
