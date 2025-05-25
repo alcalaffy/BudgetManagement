@@ -7,7 +7,8 @@ namespace BudgetManagement.Services
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Count,CreateCountViewModel>();
+            CreateMap<Count, CreateCountViewModel>();
+            CreateMap <UpdateTransactionViewModel,Transaction>().ReverseMap();
         }
     }
 }

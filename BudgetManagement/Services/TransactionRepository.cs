@@ -30,5 +30,38 @@ namespace BudgetManagement.Services
 
             transaction.Id = id;
         }
+        public async Task Update(Transaction transaction,int cuentaAnteriorid, decimal montoAnterior)
+        {
+            using var conn = new SqlConnection(connectionString);
+            await conn.ExecuteAsync("Transacciones_Actualizar", new
+            {
+                transaction.Id,
+                transaction.FechaTransaccion,
+                transaction.Monto,
+                montoAnterior,
+                transaction.CuentaId,
+                cuentaAnteriorid,
+                transaction.CategoriaId,
+                transaction.Nota
+            },
+            commandType: System.Data.CommandType.StoredProcedure);
+            
+        }
+        public async Task<Transaction> GetById(int id,int userId)
+        {
+            using var conn = new SqlConnection(connectionString);
+            var transaction = await conn.QueryFirstOrDefaultAsync<Transaction>(@"SELECT Transacciones.*, cat.TipoOperacionId                                                                            
+                                                                                FROM Transacciones
+                                                                                INNER JOIN Categorias cat ON cat.Id = Transacciones.CategoriaId 
+                                                                                WHERE Transacciones.Id = @Id
+                                                                                AND Transacciones.UsuarioId = @userId", new {id, userId });
+            return transaction;
+        }
+        public async Task Delete(int id)
+        {
+            using var conn = new SqlConnection(connectionString);
+            await conn.ExecuteAsync("Transacciones_Borrar", new { id },
+                                     commandType: System.Data.CommandType.StoredProcedure);
+        }
     }
 }

@@ -19,5 +19,7 @@ namespace BudgetManagement.Models
         [StringLength(maximumLength:1000,ErrorMessage ="The note can´t have mora than {1} characters")]
         [Display(Name = "Note")]
         public string Nota { get; set; }
+        [Display(Name = "Operation Type")]
+        public OperationType OperationTypeId { get; set; } = OperationType.Income;
     }
 }

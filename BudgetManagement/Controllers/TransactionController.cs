@@ -1,4 +1,5 @@
-﻿using BudgetManagement.IServices;
+﻿using AutoMapper;
+using BudgetManagement.IServices;
 using BudgetManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,15 +13,18 @@ namespace BudgetManagement.Controllers
         private readonly IUserService _userService;
         private readonly ICountsRepository _countsRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
         public TransactionController( ITransactionRepository transactionRepository,
                                       IUserService userService,
                                       ICountsRepository countsRepository,
-                                      ICategoryRepository categoryRepository)
+                                      ICategoryRepository categoryRepository,
+                                      IMapper mapper)
         {
             _transactionRepository = transactionRepository;
             _userService = userService;
             _countsRepository = countsRepository;
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
 
         }
         public IActionResult Index()
@@ -67,17 +71,73 @@ namespace BudgetManagement.Controllers
             await _transactionRepository.Create(transaction);
             return RedirectToAction("Index");
         }
-        private async Task<IEnumerable<SelectListItem>> GetCounts(int userId)
-        {
-            var counts= await _countsRepository.SearchCounts(userId);
-            return counts.Select(c => new SelectListItem(c.Nombre,c.Id.ToString()));
-        }
+
         [HttpPost]
         public async Task<IActionResult> GetCategoriesByOperation([FromBody] OperationType operationType)
         {
             var user = _userService.GetUser();
             var categories= await GetCategories(user,operationType);
             return Ok(categories);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Update(int id) 
+        {
+            var user = _userService.GetUser();
+            var currentTransaction = await _transactionRepository.GetById(id, user);
+            if(currentTransaction is null)
+            {
+                return RedirectToAction("NotFound", "Home");
+            }
+            var model = _mapper.Map<UpdateTransactionViewModel>(currentTransaction);
+            model.Monto = currentTransaction.Monto;
+            if(model.OperationTypeId==OperationType.Outcome)
+            {
+                model.MontoAnterior = model.Monto * -1;
+            }
+            model.CuentaAnterior = currentTransaction.CuentaId;
+            model.Categorias = await GetCategories(user,model.OperationTypeId);
+            model.Cuentas = await GetCounts(user);
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Update(UpdateTransactionViewModel transaction)
+        {
+            var user = _userService.GetUser();
+            if(!ModelState.IsValid)
+            {
+                transaction.Cuentas = await GetCounts(user);
+                transaction.Categorias = await GetCategories(user,transaction.OperationTypeId);
+                return View(transaction);
+            }
+            var count = await _countsRepository.GetCountById(transaction.CuentaId,user);
+            if(count is null)
+            {
+                return RedirectToAction("NotFound", "Home");
+            }
+            var categoty = await _categoryRepository.GetById(transaction.CategoriaId,user);
+            if(categoty is null)
+            {
+                return RedirectToAction("NotFound", "Home");
+            }
+            var currentTransaction=_mapper.Map<Transaction>(transaction);
+            if (transaction.OperationTypeId == OperationType.Outcome)
+            {
+                currentTransaction.Monto *= -1;
+            }
+            await _transactionRepository.Update(currentTransaction,transaction.CuentaAnterior,transaction.MontoAnterior);
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user= _userService.GetUser();
+            var transaction = await _transactionRepository.GetById(id,user);
+            if(transaction is null)
+            {
+                return RedirectToAction("NotFound", "Home");
+            }
+            await _transactionRepository.Delete(id);
+            return RedirectToAction("Index");
         }
         private async Task<IEnumerable<SelectListItem>> GetCategories(int userId, OperationType operationType)
         {
@@ -88,6 +148,11 @@ namespace BudgetManagement.Controllers
                 Text = c.Nombre,
                 Value = c.Id.ToString()
             });
+        }
+        private async Task<IEnumerable<SelectListItem>> GetCounts(int userId)
+        {
+            var counts = await _countsRepository.SearchCounts(userId);
+            return counts.Select(c => new SelectListItem(c.Nombre, c.Id.ToString()));
         }
 
     }
