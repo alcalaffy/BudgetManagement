@@ -13,16 +13,19 @@ namespace BudgetManagement.Controllers
         private readonly ICountTypesRepository _countTypesRepository;
         private readonly IUserService _userService;
         private readonly ICountsRepository _countsRepository;
+        private readonly ITransactionRepository _transactionRepository;
         private readonly IMapper _mapper;
         public CountsController(ICountTypesRepository countTypesRepository,
                                 IUserService userService,
                                 ICountsRepository countsRepository,
-                                IMapper mapper)
+                                IMapper mapper,
+                                ITransactionRepository transactionRepository)
         {
             _countTypesRepository = countTypesRepository;
             _userService = userService;
             _countsRepository = countsRepository;
             _mapper = mapper;
+            _transactionRepository = transactionRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -125,6 +128,47 @@ namespace BudgetManagement.Controllers
             }
             await _countsRepository.Delete(id);
             return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> Detail(int id,int mes,int año)
+        {
+            var userId = _userService.GetUser();
+            var count = await _countsRepository.GetCountById(id, userId);
+            if (count is null)
+            {
+                return RedirectToAction("Not Found", "NotFound");
+            }
+            DateTime fechaInicio;
+            DateTime fechaFin;
+            if (mes <= 0 || mes > 12 || año <= 1900)
+            {
+                var hoy = DateTime.Today;
+                fechaInicio = new DateTime(hoy.Year, hoy.Month, 1);
+            }
+            else
+            {
+                fechaInicio = new DateTime(año, mes, 1);
+            }
+            fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
+            var obtenerTransaccionesPorCuenta = new GetTransactionsByAcount()
+            {
+                CuentaId = id,
+                UsuarioId = userId,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            };
+            var transactions = await _transactionRepository.GetTransactionByAcount(obtenerTransaccionesPorCuenta);
+            var model = new DetailTransactionsReport();
+            ViewBag.Cuenta = count.Nombre;
+            var transactionsByDate = transactions.OrderByDescending(c => c.FechaTransaccion)
+                                                  .GroupBy(c=>c.FechaTransaccion)
+                                                  .Select(g=> new DetailTransactionsReport.TransactionsByDate(){
+                                                    FechaTransaccion = g.Key,
+                                                    Transacciones=g.AsEnumerable(),
+                                                   });
+            model.TransaccionesAgrupadas = transactionsByDate;
+            model.FechaInicio = fechaInicio;
+            model.FechaFin = fechaFin;
+            return View(model);
         }
         private async Task<IEnumerable<SelectListItem>> GetCountTypes(int userId)
         {

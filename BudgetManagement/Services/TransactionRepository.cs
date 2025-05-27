@@ -63,5 +63,19 @@ namespace BudgetManagement.Services
             await conn.ExecuteAsync("Transacciones_Borrar", new { id },
                                      commandType: System.Data.CommandType.StoredProcedure);
         }
+        public async Task<IEnumerable<Transaction>>GetTransactionByAcount(GetTransactionsByAcount acount)
+        {
+            using var conn = new SqlConnection(connectionString);
+            var transactions = await conn.QueryAsync<Transaction>(@"SELECT t.Id, t.Monto, t.FechaTransaccion, c.Nombre as Categoria,
+                                                                    cu.Nombre as Cuenta, c.TipoOperacionId
+                                                                    FROM Transacciones t
+                                                                    INNER JOIN Categorias c
+                                                                    ON c.Id = t.CategoriaId
+                                                                    INNER JOIN Cuentas cu
+                                                                    ON cu.Id = t.CuentaId
+                                                                    WHERE t.CuentaId = @Cuentald AND t.UsuarioId = @UsuarioId
+                                                                    AND FechaTransaccion BETWEEN @FechaInicio AND @FechaFin",acount);
+            return transactions; 
+        }
     }
 }
