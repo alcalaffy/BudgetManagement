@@ -168,6 +168,10 @@ namespace BudgetManagement.Controllers
             model.TransaccionesAgrupadas = transactionsByDate;
             model.FechaInicio = fechaInicio;
             model.FechaFin = fechaFin;
+            ViewBag.mesAnterior=fechaInicio.AddMonths(-1).Month;
+            ViewBag.añoAnterior = fechaInicio.AddMonths(-1).Year;
+            ViewBag.mesPosterior = fechaInicio.AddMonths(1).Month;
+            ViewBag.añoPosterior = fechaInicio.AddMonths(1).Year;
             return View(model);
         }
         private async Task<IEnumerable<SelectListItem>> GetCountTypes(int userId)

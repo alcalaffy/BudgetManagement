@@ -19,9 +19,9 @@
         <span asp-validation-for="CuentaId" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="OperationTypeId" class="form-label"></label>
-        <select class="form-select" asp-for="OperationTypeId" asp-items="Html.GetEnumSelectList<OperationType>()"></select>
-        <span asp-validation-for="OperationTypeId" class="text-danger"></span>
+        <label asp-for="TipoOperacionId" class="form-label"></label>
+        <select class="form-select" asp-for="TipoOperacionId" asp-items="Html.GetEnumSelectList<OperationType>()"></select>
+        <span asp-validation-for="TipoOperacionId" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="CategoriaId" class="form-label"></label>
@@ -44,7 +44,7 @@
 </form>
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
-    <script src="./js/TransactionForm.js" asp-append-version="true"></script>
+    <script src="~/js/TransactionForm.js" asp-append-version="true"></script>
     <script>
         const url = '@Url.Action("GetCategoriesByOperation")';
 

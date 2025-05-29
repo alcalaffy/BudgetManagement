@@ -1,5 +1,5 @@
 ﻿function InitialiceTransactionForm(url) {
-    $("#OperationTypeId").change(async function () {
+    $("#TipoOperacionId").change(async function () {
         const valorSeleccionado = $(this).val();
 
         const respuesta = await fetch(url, {

@@ -20,8 +20,8 @@ namespace BudgetManagement.Models
         [Display(Name = "Note")]
         public string Nota { get; set; }
         [Display(Name = "Operation Type")]
-        public OperationType OperationTypeId { get; set; } = OperationType.Income;
-        public string Cuenta { get; set; }
-        public string Categoria { get; set; }
+        public OperationType TipoOperacionId { get; set; } = OperationType.Income;
+        public string? Cuenta { get; set; }
+        public string? Categoria { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace BudgetManagement.Controllers
             var user = _userService.GetUser();
             var model = new CreateTransactionViewModel();
             model.Cuentas=  await GetCounts(user);
-            model.Categorias = await GetCategories(user,model.OperationTypeId);
+            model.Categorias = await GetCategories(user,model.TipoOperacionId);
             return View(model);
 
         }
@@ -47,10 +47,10 @@ namespace BudgetManagement.Controllers
         public async Task<IActionResult> Create(CreateTransactionViewModel transaction)
         {
             var user = _userService.GetUser();
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                transaction.Cuentas=await GetCounts(user);
-                transaction.Categorias = await GetCategories(user,transaction.OperationTypeId);
+                transaction.Cuentas = await GetCounts(user);
+                transaction.Categorias = await GetCategories(user, transaction.TipoOperacionId);
                 return View(transaction);
             }
             var count = await _countsRepository.GetCountById(transaction.CuentaId,user);
@@ -64,7 +64,7 @@ namespace BudgetManagement.Controllers
                 return RedirectToAction("NotFound", "Home");
             }
             transaction.UsuarioId = user;
-            if(transaction.OperationTypeId==OperationType.Outcome)
+            if(transaction.TipoOperacionId == OperationType.Outcome)
             {
                 transaction.Monto *= -1;
             }
@@ -90,12 +90,12 @@ namespace BudgetManagement.Controllers
             }
             var model = _mapper.Map<UpdateTransactionViewModel>(currentTransaction);
             model.Monto = currentTransaction.Monto;
-            if(model.OperationTypeId==OperationType.Outcome)
+            if(model.TipoOperacionId == OperationType.Outcome)
             {
                 model.MontoAnterior = model.Monto * -1;
             }
             model.CuentaAnterior = currentTransaction.CuentaId;
-            model.Categorias = await GetCategories(user,model.OperationTypeId);
+            model.Categorias = await GetCategories(user,model.TipoOperacionId);
             model.Cuentas = await GetCounts(user);
             return View(model);
         }
@@ -106,7 +106,7 @@ namespace BudgetManagement.Controllers
             if(!ModelState.IsValid)
             {
                 transaction.Cuentas = await GetCounts(user);
-                transaction.Categorias = await GetCategories(user,transaction.OperationTypeId);
+                transaction.Categorias = await GetCategories(user,transaction.TipoOperacionId);
                 return View(transaction);
             }
             var count = await _countsRepository.GetCountById(transaction.CuentaId,user);
@@ -120,7 +120,7 @@ namespace BudgetManagement.Controllers
                 return RedirectToAction("NotFound", "Home");
             }
             var currentTransaction=_mapper.Map<Transaction>(transaction);
-            if (transaction.OperationTypeId == OperationType.Outcome)
+            if (transaction.TipoOperacionId == OperationType.Outcome)
             {
                 currentTransaction.Monto *= -1;
             }

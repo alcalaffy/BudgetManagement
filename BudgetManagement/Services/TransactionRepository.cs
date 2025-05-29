@@ -73,7 +73,7 @@ namespace BudgetManagement.Services
                                                                     ON c.Id = t.CategoriaId
                                                                     INNER JOIN Cuentas cu
                                                                     ON cu.Id = t.CuentaId
-                                                                    WHERE t.CuentaId = @Cuentald AND t.UsuarioId = @UsuarioId
+                                                                    WHERE t.CuentaId = @CuentaId AND t.UsuarioId = @UsuarioId
                                                                     AND FechaTransaccion BETWEEN @FechaInicio AND @FechaFin",acount);
             return transactions; 
         }

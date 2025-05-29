@@ -1,0 +1,76 @@
+﻿@model DetailTransactionsReport
+@{
+    ViewData["Title"] = "Transactions Detail";
+}
+<h1>Detail of: @ViewBag.Cuenta</h1>
+<h4>
+    <a asp-route-mes="@ViewBag.mesAnterior" asp-route-año="@ViewBag.añoAnterior" class="btn btn-secondary">
+        <i class="bi-chevron-left"></i>
+    </a>
+    @Model.FechaInicio.ToString("MMM").ToUpper() - @Model.FechaInicio.Year
+    <a asp-route-mes="@ViewBag.mesPosterior" asp-route-año="@ViewBag.añoPosterior" class="btn btn-secondary">
+        <i class="bi-chevron-right"></i>
+    </a>
+</h4>
+<div class="total-container mb-3">
+    <div>
+        <div>
+            <strong>Depositos</strong>
+        </div>
+        <div class="active">
+            @Model.BalanceDepositos.ToString("N")
+        </div>
+    </div>
+    <div>
+        <div>
+            <strong>Retiros</strong>
+        </div>
+        <div class="pasive">
+            @Model.BalanceRetiros.ToString("N")
+        </div>
+    </div>
+    <div>
+        <div>
+            <strong>Total</strong>
+        </div>
+        <div>
+            @Model.Total.ToString("N")
+        </div>
+    </div>
+</div>
+@if(Model.TransaccionesAgrupadas.Count() == 0){
+    <h5>No data found</h5>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            @foreach(var t in Model.TransaccionesAgrupadas)
+            {
+                <tr style="background-color:lightblue;font-size:26px;">
+                    <td colspan="3">
+                        @t.FechaTransaccion.Day
+                        <span class="badge bg-secondary">@t.FechaTransaccion.ToString("ddd").ToUpper()</span>
+                    </td>
+                    <td class="active">@t.BalanceDepositos.ToString("N")</td>
+                    <td class="pasive">@t.BalanceRetiros.ToString("N")</td>
+                </tr>
+                @foreach (var individualT in t.Transacciones)
+                {
+                    <tr style="vertical-align:middle">
+                        <td>
+                            <a asp-controller="Transaction" asp-action="Update" asp-route-id="@individualT.Id">
+                                <i class="bi-pencil"></i>
+                            </a>
+                        </td>
+                        <td>@individualT.Categoria</td>
+                        <td>@individualT.Cuenta</td>
+                        <td class="active">@(individualT.TipoOperacionId == OperationType.Income ? individualT.Monto.ToString("N") : null)</td>
+                        <td class="pasive">@(individualT.TipoOperacionId == OperationType.Outcome ? individualT.Monto.ToString("N") : null)</td>
+                    </tr>
+                }
+            }
+            
+        </tbody>
+    </table>
+}

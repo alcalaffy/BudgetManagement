@@ -12,9 +12,9 @@
         {
             public DateTime FechaTransaccion { get; set; }
             public IEnumerable<Transaction> Transacciones { get; set; }
-            public decimal BalanceDepositos => Transacciones.Where(t => t.OperationTypeId == OperationType.Income)
+            public decimal BalanceDepositos => Transacciones.Where(t => t.TipoOperacionId == OperationType.Income)
                                                             .Sum(m => m.Monto);
-            public decimal BalanceRetiros => Transacciones.Where(t => t.OperationTypeId == OperationType.Outcome)
+            public decimal BalanceRetiros => Transacciones.Where(t => t.TipoOperacionId == OperationType.Outcome)
                                                           .Sum(m => m.Monto);
         }
                                    
